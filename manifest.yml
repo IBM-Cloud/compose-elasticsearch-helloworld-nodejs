@@ -1,0 +1,7 @@
+---
+applications:
+- name:    compose-elasticsearch-helloworld-nodejs
+  host:    compose-elasticsearch-helloworld-nodejs
+  memory:  128M
+  services:
+    - my-compose-for-elasticsearch-service
