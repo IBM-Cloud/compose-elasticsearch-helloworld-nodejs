@@ -30,7 +30,7 @@ compose-elasticsearch-helloworld-nodejs is a sample Bluemix application which sh
   **Note :** The Compose for Elasticsearch service does not offer a free plan. For details of pricing, see the _Pricing Plans_ section of the [Compose for Elasticsearch service][compose_for_elasticsearch_url] in Bluemix.
 
   ```
-  $ cf create-service compose-elasticsearch-helloworld-nodejs Standard my-compose-for-elasticsearch-service
+  $ cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
   ```
 
 8. Push the app to Bluemix.
