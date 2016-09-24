@@ -33,7 +33,13 @@ compose-elasticsearch-helloworld-nodejs is a sample Bluemix application which sh
   $ cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
   ```
 
-8. Push the app to Bluemix.
+8. Bind the service to the application.
+
+  ```
+  $ cf bind-service compose-elasticsearch-helloworld-nodejs my-compose-for-elasticsearch-service
+  ```
+  
+9. Push the app to Bluemix.
 
   ```
   $ cf push
