@@ -41,13 +41,13 @@ var appenv = cfenv.getAppEnv();
 // Within the application environment (appenv) there's a services object
 var services = appenv.services;
 
-// The services object is a map named by service so we extract the one for PostgreSQL
+// The services object is a map named by service so we extract the one for Elasticsearch
 var es_services = services["compose-for-elasticsearch"];
 
 // This check ensures there is a services for Elasticsearch databases
 assert(!util.isUndefined(es_services), "Must be bound to compose-for-elasticsearch services");
 
-// We now take the first bound MongoDB service and extract it's credentials object
+// We now take the first bound Elasticsearch service and extract it's credentials object
 var credentials = es_services[0].credentials;
 
 // Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
@@ -101,7 +101,7 @@ app.put("/words", function(request, response) {
   });
 });
 
-// Read from the database when someone visits /hello
+// Read from the database when someone visits /words
 app.get("/words", function(request, response) {
 
   client.search({
