@@ -107,7 +107,6 @@ app.get("/words", function(request, response) {
   client.search({
     index: 'examples',
     type: 'words',
-    fields: ['word','definition'],
     body: {
       sort: {
         'added' : {
@@ -122,7 +121,7 @@ app.get("/words", function(request, response) {
       // get the words from the index
       var words = [];
       resp.hits.hits.forEach(function(hit){
-        words.push( { "word" : hit.fields.word , "definition" : hit.fields.definition } );
+        words.push( { "word" : hit._source.word , "definition" : hit._source.definition } );
       });
       response.send(words);
     }
