@@ -25,9 +25,9 @@ a:hover, span.linklike:hover {
 }
 
 .newappIcon {
-	display: block;
-	margin: 0 auto;
+	display: inline;
 	max-width:200px;
+	float:left;
 }
 
 h1 {
