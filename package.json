@@ -1,23 +1,22 @@
 {
-	"name": "compose-elasticsearch-helloworld-nodejs",
-	"version": "0.0.1",
-	"dependencies": {
-		"body-parser": "^1.15.2",
-		"express": "4.13.x",
-		"http-post": "^0.1.1",
-		"http-proxy": "^1.8.1",
-		"cfenv": "1.0.x",
-		"cf-deployment-tracker-client": "*",
-		"elasticsearch": "*"
-	},
-	"main": "server.js",
+  "name": "compose-elasticsearch-helloworld-nodejs",
+  "version": "0.0.1",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "4.13.x",
+    "http-post": "^0.1.1",
+    "http-proxy": "^1.8.1",
+    "cfenv": "1.0.x",
+    "elasticsearch": "*"
+  },
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-	"engines": {
-		"node": "4.x"
-	},
-	"repository": {
+  "engines": {
+    "node": "4.x"
+  },
+  "repository": {
     "type": "git",
     "url": "https://github.com/IBM-Bluemix/compose-elasticsearch-helloworld-nodejs.git"
   },
