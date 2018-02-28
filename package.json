@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/IBM-Bluemix/compose-elasticsearch-helloworld-nodejs.git"
+    "url": "https://github.com/IBM-Cloud/compose-elasticsearch-helloworld-nodejs.git"
   },
   "author": "IBM Corp.",
   "contributors": [
@@ -28,7 +28,7 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/IBM-Bluemix/compose-elasticsearch-helloworld-nodejs/issues"
+    "url": "https://github.com/IBM-Cloud/compose-elasticsearch-helloworld-nodejs/issues"
   },
   "license": "Apache-2.0"
 }
