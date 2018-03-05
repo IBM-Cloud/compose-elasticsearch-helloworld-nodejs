@@ -18,13 +18,13 @@ compose-elasticsearch-helloworld-nodejs is a sample Bluemix application which sh
 
   **Note:** If you have a federated user ID, use the `bx login --sso` command to log in with your single sign on ID.
 
-4. Make sure you are targetting the correct {{site.data.keyword.cloud_notm}} org and space.
+4. Make sure you are targetting the correct IBM Cloud org and space.
 
   ```
   bx target --cf
   ```
 
-  Choose from the options provided. If you have already created the service, this use the same details here.
+  Choose from the options provided. If you have already created the service, use the same options here as you used when creating the service.
 
 5. Clone the app to your local environment from your terminal using the following command:
 
@@ -45,13 +45,13 @@ compose-elasticsearch-helloworld-nodejs is a sample Bluemix application which sh
 
   - You will need to specify the service plan that your service will use, which can be _Standard_ or _Enterprise_. This readme file assumes that you will use the _Standard_ plan. To use the _Enterprise_ plan you will need to create an instance of the Compose Enterprise service first. Compose Enterprise is a service which provides a private isolated cluster for your Compose databases. For information on Compose Enterprise and how to provision your app into a Compose Enterprise cluster, see the [Compose Enterprise for Bluemix help](https://console.ng.bluemix.net/docs/services/ComposeEnterprise/index.html).
 
-8. Create your service
+  To create your service:
 
   ```
   bx cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
   ```
 
-9. Push the app to Bluemix. When you push the app it will automatically be bound to the service.
+8. Push the app to Bluemix. When you push the app it will automatically be bound to the service.
 
   ```
   bx cf push
