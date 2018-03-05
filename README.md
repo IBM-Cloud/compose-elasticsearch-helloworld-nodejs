@@ -6,44 +6,55 @@ compose-elasticsearch-helloworld-nodejs is a sample Bluemix application which sh
 
 1. If you do not already have a Bluemix account, [sign up here][bluemix_signup_url]
 
-2. Download and install the [Cloud Foundry CLI][cloud_foundry_url] tool
+2. [Download and install IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html).
+
+  The IBM Cloud CLI tool tool is what you'll use to communicate with IBM Cloud from your terminal or command line.
 
 3. Connect to Bluemix in the command line tool and follow the prompts to log in.
 
   ```
-  $ cf api https://api.ng.bluemix.net
-  $ cf login
+  bx login
   ```
 
-4. Clone the app to your local environment from your terminal using the following command:
+  **Note:** If you have a federated user ID, use the `bx login --sso` command to log in with your single sign on ID.
+
+4. Make sure you are targetting the correct {{site.data.keyword.cloud_notm}} org and space.
+
+  ```
+  bx target --cf
+  ```
+
+  Choose from the options provided. If you have already created the service, this use the same details here.
+
+5. Clone the app to your local environment from your terminal using the following command:
 
   ```
   git clone https://github.com/IBM-Bluemix/compose-elasticsearch-helloworld-nodejs.git
   ```
 
-5. `cd` into this newly created directory
+6. `cd` into this newly created directory
 
-6. Open the `manifest.yml` file.
+7. Update the `manifest.yml` file.
 
   - Change the `host` value to something unique. The host you choose will determinate the subdomain of your application's URL:  `<host>.mybluemix.net`.
   - Change the `name` value. The value you choose will be the name of the app as it appears in your Bluemix dashboard.
 
-7. If you have already created a Compose for Elasticsearch service in Bluemix, update the `service` value in `manifest.yml` to match the name of your service. If you don't already have a Compose for Elasticsearch service in Bluemix, you can create one now using the `create-service` command.
+  If you have already created a Compose for Elasticsearch service in Bluemix, update the `service` value in `manifest.yml` to match the name of your service. If you don't already have a Compose for Elasticsearch service in Bluemix, you can create one now using the `create-service` command.
 
   - **Note :** The Compose for Elasticsearch service does not offer a free plan. For details of pricing, see the _Pricing Plans_ section of the [Compose for Elasticsearch service][compose_for_elasticsearch_url] in Bluemix.
 
   - You will need to specify the service plan that your service will use, which can be _Standard_ or _Enterprise_. This readme file assumes that you will use the _Standard_ plan. To use the _Enterprise_ plan you will need to create an instance of the Compose Enterprise service first. Compose Enterprise is a service which provides a private isolated cluster for your Compose databases. For information on Compose Enterprise and how to provision your app into a Compose Enterprise cluster, see the [Compose Enterprise for Bluemix help](https://console.ng.bluemix.net/docs/services/ComposeEnterprise/index.html).
 
-  Create your service:
+8. Create your service
 
   ```
-  $ cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
+  bx cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
   ```
 
-8. Push the app to Bluemix. When you push the app it will automatically be bound to the service.
+9. Push the app to Bluemix. When you push the app it will automatically be bound to the service.
 
   ```
-  $ cf push
+  bx cf push
   ```
 
 Your application is now running at `<host>.mybluemix.net`.
