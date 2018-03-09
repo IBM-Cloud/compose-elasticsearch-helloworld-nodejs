@@ -18,7 +18,7 @@ compose-elasticsearch-helloworld-nodejs is a sample IBM Cloud application which 
 
   **Note:** If you have a federated user ID, use the `bx login --sso` command to log in with your single sign on ID.
 
-4. Make sure you are targetting the correct IBM Cloud org and space.
+4. Make sure you are targeting the correct IBM Cloud org and space.
 
   ```
   bx target --cf
@@ -34,7 +34,7 @@ compose-elasticsearch-helloworld-nodejs is a sample IBM Cloud application which 
 
   You will need to specify the service plan that your service will use, which can be _Standard_ or _Enterprise_. This readme file assumes that you will use the _Standard_ plan. To use the _Enterprise_ plan you will need to create an instance of the Compose Enterprise service first. Compose Enterprise is a service which provides a private isolated cluster for your Compose databases. For information on Compose Enterprise and how to provision your app into a Compose Enterprise cluster, see the [Compose Enterprise for IBM Cloud help](https://console.bluemix.net/docs/services/ComposeEnterprise/index.html).
 
-  To create your service, use the `create-service` command, specifying the service identifier, `compose-for-elasticsearch`, the service plan and a name for your new service instance:
+  To create your service, use the `create-service` command, specifying the service identifier, `compose-for-elasticsearch`, the service plan and a name for your new service instance. For example, to create a service called "my-compose-for-elasticsearch-service" on the _Standard_ plan, the command would be:
 
   ```
   bx cf create-service compose-for-elasticsearch Standard my-compose-for-elasticsearch-service
