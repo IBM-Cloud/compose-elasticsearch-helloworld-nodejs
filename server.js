@@ -14,48 +14,62 @@
  * limitations under the License.
  */
 
- // First add the obligatory web framework
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
+"use strict";
+/* jshint node:true */
 
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+// Add the express web framework
+const express = require("express");
+const app = express();
+
+// Use body-parser to handle the PUT data
+const bodyParser = require("body-parser");
+app.use(
+    bodyParser.urlencoded({
+        extended: false
+    })
+);
 
 // Util is handy to have around, so thats why that's here.
 const util = require('util')
 // and so is assert
 const assert = require('assert');
 
-// We want to extract the port to publish our app on
-var port = process.env.PORT || 8080;
-
 // Then we'll pull in the database client library
-var elasticsearch=require('elasticsearch');
+let elasticsearch=require('elasticsearch');
 
 // Now lets get cfenv and ask it to parse the environment variable
-var cfenv = require('cfenv');
-var appenv = cfenv.getAppEnv();
+let cfenv = require('cfenv');
+
+// load local VCAP configuration  and service credentials
+let vcapLocal;
+try {
+  vcapLocal = require('./vcap-local.json');
+  console.log("Loaded local VCAP");
+} catch (e) { 
+    // console.log(e)
+}
+
+const appEnvOpts = vcapLocal ? { vcap: vcapLocal} : {}
+const appEnv = cfenv.getAppEnv(appEnvOpts);
 
 // Within the application environment (appenv) there's a services object
-var services = appenv.services;
+let services = appEnv.services;
 
 // The services object is a map named by service so we extract the one for Elasticsearch
-var es_services = services["compose-for-elasticsearch"];
+let es_services = services["compose-for-elasticsearch"];
 
 // This check ensures there is a services for Elasticsearch databases
 assert(!util.isUndefined(es_services), "Must be bound to compose-for-elasticsearch services");
 
 // We now take the first bound Elasticsearch service and extract it's credentials object
-var credentials = es_services[0].credentials;
+let credentials = es_services[0].credentials;
 
 // Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
 // We convert that from a string into a Buffer entry in an array which we use when
 // connecting.
-var ca = new Buffer(credentials.ca_certificate_base64, 'base64');
+let ca = new Buffer(credentials.ca_certificate_base64, 'base64');
 
-var client = new elasticsearch.Client( {
+let client = new elasticsearch.Client( {
   hosts: [
     credentials.uri,
     credentials.uri_direct_1
@@ -65,71 +79,117 @@ var client = new elasticsearch.Client( {
   }
 });
 
-client.indices.exists({
-  index:'examples'
-},function(err,resp,status) {
-  if (resp === false) {
-    client.indices.create({
-      index: 'examples'
-    },function(err,resp,status) {
-      if(err) {
-        console.log(err);
-      }
-    });
-  }
-});
+// We want to extract the port to publish our app on
+let port = process.env.PORT || 8080;
 
 // We can now set up our web server. First up we set it to serve static pages
 app.use(express.static(__dirname + '/public'));
 
-app.put("/words", function(request, response) {
-  var now = new Date();
-  client.index({
-    index: 'examples',
-    type: 'words',
-    body: {
-      "word": request.body.word,
-      "definition": request.body.definition,
-      "added": now
-    }
-  },function(err,resp,status) {
-    if (err) {
-      response.status(500).send(err);
-    } else {
-      response.send(resp);
-    }
-  });
-});
-
-// Read from the database when someone visits /words
-app.get("/words", function(request, response) {
-
-  client.search({
-    index: 'examples',
-    type: 'words',
-    body: {
-      sort: {
-        'added' : {
-          order: 'desc'
+// Create the index if it doesn't already exist
+function checkIndices() {
+    client.indices.exists({
+        index: 'grand_tour'
+    }, function(err, resp, status) {
+        if (resp === false) {
+            client.indices.create({
+                index: 'grand_tour',
+                body: {
+                    mappings: {
+                        "words": {
+                            "properties": {
+                                "word": { "type": "text" },
+                                "definition": { "type": "text" },
+                                "added": { "type": "date" }
+                            }
+                        }
+                    }
+                }
+            }, function(err, resp, status) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
-      }
-    }
-  },function (err,resp,status) {
-    if (err) {
-      response.status(500).send(err);
-    } else {
-      // get the words from the index
-      var words = [];
-      resp.hits.hits.forEach(function(hit){
-        words.push( { "word" : hit._source.word , "definition" : hit._source.definition } );
-      });
-      response.send(words);
-    }
-  });
+    });
+}
 
+// Check for an existing index
+checkIndices();
+
+// Add a word to the index
+function addWord(word, definition) {
+    return new Promise(function(resolve, reject) {
+        let now = new Date();
+        client.index({
+            index: 'grand_tour',
+            type: 'words',
+            body: {
+                "word": word,
+                "definition": definition,
+                "added": now
+            },
+            refresh: "wait_for"
+        }, function(err, resp, status) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(resp);
+            }
+        });
+    });
+}
+
+// Get words from the index
+function getWords() {
+    return new Promise(function(resolve, reject) {
+        client.search({
+            index: 'grand_tour',
+            type: 'words',
+            _source: ['word', 'definition'],
+            body: {
+                sort: {
+                    'added': {
+                        order: 'desc'
+                    }
+                }
+            }
+        }, function(err, resp, status) {
+            if (err) {
+                reject(err);
+            } else {
+                let words = [];
+                resp.hits.hits.forEach(function(hit) {
+                    words.push({ "word": hit._source.word, "definition": hit._source.definition });
+                });
+                resolve(words);
+            }
+        });
+    });
+}
+
+// The user has clicked submit to add a word and definition to the index
+// Send the data to the addWord function and send a response if successful
+app.put("/words", function(request, response) {
+    addWord(request.body.word, request.body.definition).then(function(resp) {
+        response.send(resp);
+    }).catch(function(err) {
+        console.log(err);
+        response.status(500).send(err);
+    });
 });
 
-// Now we go and listen for a connection.
-app.listen(port);
+// Read from the database when the page is loaded or after a word is successfully added
+// Use the getWords function to get a list of words and definitions from the index
+app.get("/words", function(request, response) {
+    getWords().then(function(words) {
+        response.send(words);
+    }).catch(function(err) {
+        console.log(err);
+        response.status(500).send(err);
+    });
+});
 
-require("cf-deployment-tracker-client").track();
+// Listen for a connection.
+app.listen(port, function() {
+    console.log('Server is listening on port ' + port);
+});
