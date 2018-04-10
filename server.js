@@ -30,7 +30,7 @@ app.use(
 );
 
 // Util is handy to have around, so thats why that's here.
-const util = require('util')
+const util = require('util');
 // and so is assert
 const assert = require('assert');
 
@@ -49,7 +49,7 @@ try {
     // console.log(e)
 }
 
-const appEnvOpts = vcapLocal ? { vcap: vcapLocal} : {}
+const appEnvOpts = vcapLocal ? { vcap: vcapLocal} : {};
 const appEnv = cfenv.getAppEnv(appEnvOpts);
 
 // Within the application environment (appenv) there's a services object
@@ -67,16 +67,19 @@ let credentials = es_services[0].credentials;
 // Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
 // We convert that from a string into a Buffer entry in an array which we use when
 // connecting.
-let ca = new Buffer(credentials.ca_certificate_base64, 'base64');
+
+let sslopts={};
+
+if(credentials.ca_certificate) {
+    sslopts.ca=new Buffer(credentials.ca_certificate_base64, 'base64');
+}
 
 let client = new elasticsearch.Client( {
   hosts: [
     credentials.uri,
     credentials.uri_direct_1
   ],
-  ssl: {
-    ca: ca
-  }
+  ssl: sslopts
 });
 
 // We want to extract the port to publish our app on
